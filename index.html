@@ -1,0 +1,1548 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ruleta de Sí o No – RuletaSiNo.com</title>
+  <meta name="description" content="Gira la ruleta de Sí o No gratis. Toma decisiones al azar de forma rápida y divertida. Modos SÍ/NO y SÍ/NO/TAL VEZ.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Nunito:wght@400;600;700;900&family=Anton&display=swap" rel="stylesheet">
+  <style>
+    /* ================================================================
+       CSS VARIABLES
+    ================================================================ */
+    :root {
+      --bg:          #080b14;
+      --bg-card:     #0d1220;
+      --bg-panel:    #121829;
+      --bg-hover:    #161e30;
+      --gold:        #c8a84b;
+      --gold-bright: #f0c842;
+      --gold-dark:   #9a7a28;
+      --gold-border: rgba(200,168,75,.25);
+      --yes:  #00cc96;  --yes-alt:  #009e74;  --yes-dim: rgba(0,204,150,.12);
+      --no:   #ff4757;  --no-alt:   #cc2233;  --no-dim:  rgba(255,71,87,.12);
+      --maybe:#ffd32a;  --maybe-alt:#d4a600;  --maybe-dim:rgba(255,211,42,.12);
+      --txt:  #eeeae0;  --txt2: rgba(238,234,224,.55);  --txt3: rgba(238,234,224,.25);
+      --r-card: 16px;  --r-btn: 12px;
+      --shadow: 0 8px 32px rgba(0,0,0,.45);
+      --f-display: 'Outfit', sans-serif;
+      --f-body:    'Nunito', sans-serif;
+      --f-wheel:   'Anton', sans-serif;
+    }
+
+    /* ================================================================
+       RESET & BASE
+    ================================================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--f-body);
+      background: var(--bg);
+      color: var(--txt);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    body::before {
+      content: '';
+      position: fixed; inset: 0; pointer-events: none; z-index: 0;
+      background:
+        radial-gradient(ellipse 60% 60% at 15% 15%, rgba(50,30,90,.4), transparent),
+        radial-gradient(ellipse 50% 50% at 85% 80%, rgba(10,40,80,.35), transparent),
+        radial-gradient(ellipse 40% 40% at 50% 50%, rgba(200,168,75,.04), transparent);
+    }
+
+    /* ================================================================
+       LAYOUT HELPERS
+    ================================================================ */
+    .container { max-width: 1180px; margin: 0 auto; padding: 0 18px; position: relative; z-index: 1; }
+    .flex-between { display: flex; align-items: center; justify-content: space-between; }
+    .divider { height: 1px; background: linear-gradient(90deg,transparent,var(--gold-border),transparent); margin: 10px 0; }
+
+    /* ================================================================
+       SCROLLBAR
+    ================================================================ */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--gold-border); border-radius: 3px; }
+
+    /* ================================================================
+       HEADER
+    ================================================================ */
+    header {
+      background: rgba(8,10,20,.93);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--gold-border);
+      padding: 13px 0;
+      position: sticky; top: 0; z-index: 200;
+    }
+    .header-inner { display: flex; align-items: center; justify-content: space-between; }
+    .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .logo-icon {
+      width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0;
+      background: conic-gradient(var(--yes) 0deg 90deg, var(--no) 90deg 180deg, var(--maybe) 180deg 270deg, var(--yes-alt) 270deg 360deg);
+      box-shadow: 0 0 14px rgba(200,168,75,.5);
+    }
+    .logo-text {
+      font-family: var(--f-display); font-weight: 800; font-size: 1.15rem;
+      background: linear-gradient(135deg, #fff 0%, var(--gold-bright) 55%, var(--gold) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .btn-icon {
+      background: rgba(255,255,255,.04); border: 1px solid var(--gold-border);
+      color: var(--txt2); border-radius: 9px; padding: 7px 14px;
+      font-size: .78rem; font-family: var(--f-body); font-weight: 700;
+      cursor: pointer; transition: all .2s; display: flex; align-items: center; gap: 6px;
+    }
+    .btn-icon:hover { background: rgba(200,168,75,.1); border-color: var(--gold); color: var(--gold); }
+    .btn-icon:focus-visible { outline: 2px solid var(--gold-bright); outline-offset: 3px; }
+
+    /* ================================================================
+       AD SLOTS — Google AdSense optimized sizes
+       728x90  leaderboard  | 336x280 large rectangle
+       300x250 medium rect  | 160x600 wide skyscraper
+       300x50  mobile banner
+    ================================================================ */
+    .ad-slot { text-align: center; }
+    .ad-placeholder {
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(255,255,255,.025); border: 1px dashed rgba(255,255,255,.09);
+      border-radius: 10px; font-size: .7rem; color: var(--txt3);
+      letter-spacing: .08em; text-transform: uppercase; font-family: var(--f-body);
+      gap: 6px;
+    }
+
+    /* -- Leaderboard 728x90 below hero (desktop) -- */
+    .ad-leaderboard { padding: 8px 0 16px; }
+    .ad-leaderboard .ad-placeholder { height: 90px; max-width: 728px; margin: 0 auto; }
+
+    /* -- Skyscraper 160x600 flanking main layout (desktop only) -- */
+    .ad-outer-wrap {
+      display: grid;
+      grid-template-columns: 160px 1fr 160px;
+      gap: 14px;
+      align-items: start;
+    }
+    .ad-skyscraper-left,
+    .ad-skyscraper-right { position: sticky; top: 80px; }
+    .ad-skyscraper-left .ad-placeholder,
+    .ad-skyscraper-right .ad-placeholder { width: 160px; height: 600px; border-radius: 10px; }
+
+    /* -- Sidebar 300x250 inside controls column -- */
+    .ad-sidebar { margin-top: 4px; }
+    .ad-sidebar .ad-placeholder { width: 100%; min-height: 250px; border-radius: 12px; }
+
+    /* -- Mobile-only ad between GIRAR and counters -- */
+    .ad-mobile-spin {
+      display: none;
+      width: 100%;
+      padding: 6px 0 2px;
+    }
+    .ad-mobile-spin .ad-placeholder { height: 100px; width: 100%; max-width: 360px; margin: 0 auto; border-radius: 10px; }
+
+    /* -- Large rectangle 336x280 between wheel area and history -- */
+    .ad-rectangle { margin: 24px 0 0; }
+    .ad-rectangle .ad-placeholder { height: 280px; max-width: 336px; margin: 0 auto; border-radius: 12px; }
+
+    /* -- Leaderboard 728x90 between history and footer -- */
+    .ad-bottom { margin: 20px 0; }
+    .ad-bottom .ad-placeholder { height: 90px; max-width: 728px; margin: 0 auto; border-radius: 10px; }
+
+    /* -- Mobile header banner (below logo, mobile only) -- */
+    .ad-mobile-header { display: none; padding: 8px 0; background: rgba(0,0,0,.2); }
+
+    /* -- RESPONSIVE -- */
+    @media (max-width: 1200px) {
+      .ad-outer-wrap { grid-template-columns: 1fr; }
+      .ad-skyscraper-left, .ad-skyscraper-right { display: none; }
+    }
+    @media (max-width: 768px) {
+      .ad-leaderboard { display: none; }
+      .ad-sidebar { display: none; }
+      .ad-rectangle .ad-placeholder { max-width: 100%; height: 200px; }
+      .ad-mobile-header { display: block; }
+      .ad-mobile-spin { display: block; }
+      .ad-bottom .ad-placeholder { height: 60px; }
+    }
+
+    /* ================================================================
+       HERO
+    ================================================================ */
+    .hero { text-align: center; padding: 28px 0 20px; }
+    .hero h1 {
+      font-family: var(--f-display); font-weight: 800;
+      font-size: clamp(1.7rem, 4vw, 2.8rem);
+      background: linear-gradient(135deg, #fff 0%, var(--gold-bright) 50%, var(--gold) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      line-height: 1.1; margin-bottom: 7px;
+    }
+    .hero p { color: var(--txt2); font-size: .95rem; font-weight: 600; letter-spacing: .03em; }
+
+    /* ================================================================
+       MAIN LAYOUT
+    ================================================================ */
+    .main-layout {
+      display: grid;
+      grid-template-columns: 1fr 330px;
+      gap: 22px;
+      align-items: start;
+      padding-bottom: 28px;
+    }
+    @media (max-width: 900px) { .main-layout { grid-template-columns: 1fr; } }
+
+    .wheel-column { display: flex; flex-direction: column; align-items: center; gap: 18px; }
+    .controls-column { display: flex; flex-direction: column; gap: 14px; }
+
+    /* ================================================================
+       WHEEL
+    ================================================================ */
+    .wheel-wrapper { position: relative; width: 100%; max-width: 470px; }
+    .wheel-pointer {
+      position: absolute; top: -4px; left: 50%; transform: translateX(-50%);
+      z-index: 10; filter: drop-shadow(0 4px 10px rgba(200,168,75,.7));
+    }
+    #wheelCanvas {
+      display: block; width: 100%; height: auto;
+      border-radius: 50%; cursor: pointer;
+      box-shadow: 0 0 0 3px rgba(200,168,75,.2), 0 0 50px rgba(200,168,75,.08), 0 24px 60px rgba(0,0,0,.55);
+      transition: box-shadow .3s;
+    }
+    #wheelCanvas:hover { box-shadow: 0 0 0 3px rgba(200,168,75,.4), 0 0 50px rgba(200,168,75,.15), 0 24px 60px rgba(0,0,0,.55); }
+
+    /* ================================================================
+       SPIN BUTTON AREA
+    ================================================================ */
+    .spin-btn-area { display: flex; flex-direction: column; align-items: center; gap: 10px; width: 100%; max-width: 470px; }
+    .btn-spin {
+      font-family: var(--f-display); font-weight: 900;
+      font-size: 1.15rem; letter-spacing: .06em;
+      color: #1a1000;
+      background: linear-gradient(135deg, var(--gold-bright) 0%, var(--gold) 55%, var(--gold-dark) 100%);
+      border: none; border-radius: var(--r-btn);
+      padding: 17px 56px; cursor: pointer; position: relative; overflow: hidden;
+      transition: transform .25s, box-shadow .25s;
+      box-shadow: 0 4px 22px rgba(200,168,75,.4), 0 2px 0 rgba(0,0,0,.35);
+      min-width: 200px;
+    }
+    .btn-spin::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,.28) 0%, transparent 55%);
+      opacity: 0; transition: opacity .2s;
+    }
+    .btn-spin:hover::after { opacity: 1; }
+    .btn-spin:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(200,168,75,.5), 0 2px 0 rgba(0,0,0,.35); }
+    .btn-spin:active { transform: translateY(1px); box-shadow: 0 2px 12px rgba(200,168,75,.3); }
+    .btn-spin:disabled { opacity: .55; cursor: not-allowed; transform: none !important; }
+    .btn-spin:focus-visible { outline: 3px solid var(--gold-bright); outline-offset: 4px; }
+    .spin-hint { font-size: .72rem; color: var(--txt3); letter-spacing: .05em; }
+
+    /* Last result banner */
+    .last-result-banner {
+      display: none; align-items: center; gap: 9px;
+      padding: 10px 22px; border-radius: 10px;
+      font-family: var(--f-display); font-size: 1rem; font-weight: 700;
+      animation: fadeInUp .4s ease;
+    }
+    .last-result-banner.show { display: flex; }
+    .last-result-banner.yes  { background: var(--yes-dim);   border: 1px solid rgba(0,204,150,.35);  color: var(--yes); }
+    .last-result-banner.no   { background: var(--no-dim);    border: 1px solid rgba(255,71,87,.35);  color: var(--no); }
+    .last-result-banner.maybe{ background: var(--maybe-dim); border: 1px solid rgba(255,211,42,.35); color: var(--maybe); }
+
+    /* ================================================================
+       CARDS
+    ================================================================ */
+    .card {
+      background: var(--bg-card); border: 1px solid var(--gold-border);
+      border-radius: var(--r-card); padding: 18px 20px; box-shadow: var(--shadow);
+    }
+    .card-title {
+      font-family: var(--f-display); font-weight: 700; font-size: .82rem;
+      letter-spacing: .06em; text-transform: uppercase; color: var(--gold);
+    }
+    .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+
+    /* ================================================================
+       COUNTERS
+    ================================================================ */
+    .counters-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+    .counter-item {
+      background: var(--bg-panel); border-radius: 12px; padding: 14px 6px;
+      text-align: center; border: 1px solid transparent; transition: all .3s;
+    }
+    .counter-item.yes   { border-color: rgba(0,204,150,.25); }
+    .counter-item.no    { border-color: rgba(255,71,87,.25); }
+    .counter-item.maybe { border-color: rgba(255,211,42,.25); }
+    .counter-num {
+      font-family: var(--f-display); font-size: 2.1rem; font-weight: 800;
+      line-height: 1; transition: transform .3s cubic-bezier(.34,1.56,.64,1);
+    }
+    .counter-num.bump { transform: scale(1.35); }
+    .counter-item.yes   .counter-num { color: var(--yes); }
+    .counter-item.no    .counter-num { color: var(--no); }
+    .counter-item.maybe .counter-num { color: var(--maybe); }
+    .counter-label { font-size: .68rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--txt2); margin-top: 3px; }
+
+    /* ================================================================
+       CONTROLS
+    ================================================================ */
+    .control-group { margin-bottom: 14px; }
+    .control-label { display: block; font-size: .76rem; font-weight: 800; text-transform: uppercase; letter-spacing: .07em; color: var(--txt2); margin-bottom: 7px; }
+    .btn-group { display: flex; gap: 6px; flex-wrap: wrap; }
+    .btn-opt {
+      flex: 1; min-width: 55px; padding: 9px 6px;
+      background: var(--bg-panel); border: 1px solid rgba(255,255,255,.07);
+      border-radius: 9px; color: var(--txt2);
+      font-family: var(--f-body); font-size: .78rem; font-weight: 700;
+      cursor: pointer; transition: all .2s; text-align: center;
+    }
+    .btn-opt:hover { border-color: var(--gold); color: var(--gold); }
+    .btn-opt.active { background: rgba(200,168,75,.14); border-color: var(--gold); color: var(--gold-bright); }
+    .btn-opt:focus-visible { outline: 2px solid var(--gold-bright); outline-offset: 2px; }
+
+    /* Stepper */
+    .stepper { display: flex; align-items: center; gap: 10px; }
+    .stepper-btn {
+      width: 36px; height: 36px; border-radius: 9px;
+      background: var(--bg-panel); border: 1px solid rgba(255,255,255,.1);
+      color: var(--txt); font-size: 1.1rem; cursor: pointer; transition: all .2s;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .stepper-btn:hover { border-color: var(--gold); color: var(--gold); }
+    .stepper-val { font-family: var(--f-display); font-size: 1.5rem; font-weight: 800; color: var(--gold-bright); min-width: 28px; text-align: center; }
+
+    /* Range */
+    .range-row { display: flex; align-items: center; gap: 10px; }
+    .range-slider {
+      flex: 1; -webkit-appearance: none; appearance: none;
+      height: 4px; background: rgba(255,255,255,.1); border-radius: 4px; outline: none;
+    }
+    .range-slider::-webkit-slider-thumb {
+      -webkit-appearance: none; width: 16px; height: 16px;
+      border-radius: 50%; background: var(--gold); cursor: pointer;
+      box-shadow: 0 0 8px rgba(200,168,75,.6);
+    }
+    .range-val { font-size: .82rem; font-weight: 800; color: var(--gold-bright); min-width: 34px; text-align: right; }
+
+    /* Toggle switch */
+    .toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 7px 0; border-bottom: 1px solid rgba(255,255,255,.04); }
+    .toggle-row:last-child { border-bottom: none; }
+    .toggle-label { font-size: .83rem; color: var(--txt2); font-weight: 600; }
+    .toggle-sw { position: relative; width: 42px; height: 23px; flex-shrink: 0; }
+    .toggle-sw input { opacity: 0; width: 0; height: 0; position: absolute; }
+    .toggle-track {
+      position: absolute; inset: 0; background: rgba(255,255,255,.1);
+      border-radius: 23px; cursor: pointer; transition: background .3s;
+    }
+    .toggle-track::after {
+      content: ''; position: absolute; width: 17px; height: 17px;
+      border-radius: 50%; background: #fff; top: 3px; left: 3px;
+      transition: transform .3s; box-shadow: 0 1px 4px rgba(0,0,0,.3);
+    }
+    .toggle-sw input:checked + .toggle-track { background: var(--gold); }
+    .toggle-sw input:checked + .toggle-track::after { transform: translateX(19px); }
+
+    /* Buttons */
+    .btn-secondary {
+      background: transparent; border: 1px solid var(--gold-border);
+      color: var(--txt2); border-radius: 8px; padding: 7px 14px;
+      font-size: .78rem; font-family: var(--f-body); font-weight: 700;
+      cursor: pointer; transition: all .2s;
+    }
+    .btn-secondary:hover { background: rgba(200,168,75,.1); color: var(--gold); border-color: var(--gold); }
+    .btn-danger {
+      background: transparent; border: 1px solid rgba(255,71,87,.3);
+      color: rgba(255,100,115,.8); border-radius: 8px; padding: 7px 14px;
+      font-size: .78rem; font-family: var(--f-body); font-weight: 700;
+      cursor: pointer; transition: all .2s;
+    }
+    .btn-danger:hover { background: rgba(255,71,87,.1); color: var(--no); border-color: var(--no); }
+
+    /* ================================================================
+       HISTORY
+    ================================================================ */
+    .history-card { background: var(--bg-card); border: 1px solid var(--gold-border); border-radius: var(--r-card); overflow: hidden; box-shadow: var(--shadow); }
+    .history-hdr {
+      display: flex; align-items: center; padding: 15px 20px;
+      cursor: pointer; border-bottom: 1px solid rgba(255,255,255,.04);
+      transition: background .2s; user-select: none;
+    }
+    .history-hdr:hover { background: rgba(255,255,255,.02); }
+    .hist-chevron { transition: transform .3s; color: var(--txt2); flex-shrink: 0; }
+    .hist-chevron.open { transform: rotate(180deg); }
+    .history-body { max-height: 0; overflow: hidden; transition: max-height .4s ease; }
+    .history-body.open { max-height: 420px; overflow-y: auto; }
+    .history-list { padding: 10px; display: flex; flex-direction: column; gap: 4px; }
+    .history-empty { text-align: center; color: var(--txt3); font-size: .83rem; padding: 20px; }
+    .history-item { display: flex; align-items: center; gap: 10px; padding: 7px 12px; border-radius: 8px; background: var(--bg-panel); font-size: .83rem; font-weight: 600; }
+    .hist-num { color: var(--txt3); font-size: .72rem; min-width: 24px; }
+    .hist-badge { padding: 2px 10px; border-radius: 20px; font-size: .7rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
+    .hist-badge.yes   { background: rgba(0,204,150,.15); color: var(--yes); }
+    .hist-badge.no    { background: rgba(255,71,87,.15);  color: var(--no); }
+    .hist-badge.maybe { background: rgba(255,211,42,.15); color: var(--maybe); }
+    .hist-time { margin-left: auto; color: var(--txt3); font-size: .72rem; }
+
+    /* ================================================================
+       MODAL
+    ================================================================ */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,.82);
+      backdrop-filter: blur(10px); z-index: 1000;
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; visibility: hidden; transition: opacity .3s, visibility .3s;
+    }
+    .modal-overlay.show { opacity: 1; visibility: visible; }
+    .modal-card {
+      background: var(--bg-card); border: 1px solid var(--gold-border);
+      border-radius: 22px; padding: 46px 38px 38px;
+      max-width: 390px; width: calc(100% - 36px); text-align: center; position: relative;
+      transform: scale(.82) translateY(18px);
+      transition: transform .4s cubic-bezier(.34,1.56,.64,1);
+      box-shadow: 0 32px 90px rgba(0,0,0,.65);
+    }
+    .modal-overlay.show .modal-card { transform: scale(1) translateY(0); }
+    .modal-lbl { font-size: .76rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--txt2); margin-bottom: 10px; }
+    .modal-emoji { font-size: 3rem; display: block; margin-bottom: 10px; }
+    .modal-result {
+      font-family: var(--f-display); font-size: 4.2rem; font-weight: 800;
+      line-height: 1; margin-bottom: 6px;
+    }
+    .modal-result.yes   { color: var(--yes);   text-shadow: 0 0 50px rgba(0,204,150,.5); }
+    .modal-result.no    { color: var(--no);    text-shadow: 0 0 50px rgba(255,71,87,.5); }
+    .modal-result.maybe { color: var(--maybe); text-shadow: 0 0 50px rgba(255,211,42,.5); }
+    .modal-mystery { font-family: var(--f-display); font-size: 3.8rem; font-weight: 800; color: var(--txt3); margin-bottom: 6px; letter-spacing: .2em; }
+    .modal-actions { display: flex; gap: 8px; justify-content: center; margin-top: 22px; flex-wrap: wrap; }
+    .btn-modal-primary {
+      font-family: var(--f-body); font-weight: 900; font-size: .95rem;
+      color: #1a1000;
+      background: linear-gradient(135deg, var(--gold-bright), var(--gold));
+      border: none; border-radius: 12px; padding: 13px 30px; cursor: pointer; transition: all .2s;
+    }
+    .btn-modal-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 22px rgba(200,168,75,.4); }
+    .btn-modal-reveal {
+      font-family: var(--f-body); font-weight: 900; font-size: .95rem;
+      color: #fff;
+      background: linear-gradient(135deg, #7c3aed, #9f67f0);
+      border: none; border-radius: 12px; padding: 13px 30px; cursor: pointer; transition: all .2s;
+    }
+    .btn-modal-reveal:hover { transform: translateY(-1px); box-shadow: 0 6px 22px rgba(124,58,237,.4); }
+    .modal-close-x {
+      position: absolute; top: 14px; right: 14px;
+      background: rgba(255,255,255,.05); border: none; color: var(--txt2);
+      width: 30px; height: 30px; border-radius: 50%;
+      cursor: pointer; font-size: 1rem; display: flex; align-items: center; justify-content: center;
+      transition: all .2s;
+    }
+    .modal-close-x:hover { background: rgba(255,255,255,.12); color: #fff; }
+
+    /* ================================================================
+       CONFETTI CANVAS
+    ================================================================ */
+    #confettiCanvas { position: fixed; inset: 0; pointer-events: none; z-index: 999; }
+
+    /* ================================================================
+       FULLSCREEN
+    ================================================================ */
+    .fs-active header,
+    .fs-active .ad-leaderboard,
+    .fs-active .ad-skyscraper-left,
+    .fs-active .ad-skyscraper-right,
+    .fs-active .ad-rectangle,
+    .fs-active .ad-middle,
+    .fs-active .ad-bottom,
+    .fs-active .controls-column,
+    .fs-active footer,
+    .fs-active .history-section { display: none !important; }
+    .fs-active .main-layout { grid-template-columns: 1fr; justify-items: center; }
+    .fs-active .wheel-wrapper { max-width: 580px; }
+    .fs-active .hero { padding: 16px 0 12px; }
+    .fs-exit-btn {
+      position: fixed; bottom: 22px; right: 22px; z-index: 500;
+      background: rgba(200,168,75,.18); border: 1px solid var(--gold);
+      color: var(--gold); border-radius: 10px; padding: 9px 18px;
+      font-family: var(--f-body); font-weight: 700; font-size: .82rem;
+      cursor: pointer; transition: all .2s; display: none; align-items: center; gap: 6px;
+    }
+    .fs-active .fs-exit-btn { display: flex; }
+    .fs-exit-btn:hover { background: rgba(200,168,75,.3); }
+
+    /* ================================================================
+       FOOTER
+    ================================================================ */
+    footer { border-top: 1px solid var(--gold-border); padding: 22px 0; text-align: center; color: var(--txt3); font-size: .78rem; }
+
+    /* ================================================================
+       ANIMATIONS
+    ================================================================ */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes spinIcon {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+    .spin-icon { display: inline-block; animation: spinIcon .7s linear infinite; }
+
+    /* ================================================================
+       RESPONSIVE
+    ================================================================ */
+    @media (max-width: 768px) {
+      .hero { padding: 22px 0 14px; }
+      .main-layout { padding-bottom: 20px; }
+      .wheel-wrapper { max-width: 340px; }
+      .btn-spin { padding: 15px 38px; font-size: 1.05rem; }
+      .modal-card { padding: 36px 22px 26px; }
+      .modal-result { font-size: 3.2rem; }
+      .counters-grid { gap: 6px; }
+      .counter-num { font-size: 1.8rem; }
+      .card { padding: 15px 16px; }
+    }
+    @media (max-width: 400px) {
+      .wheel-wrapper { max-width: 100%; }
+      .btn-spin { min-width: 160px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Confetti Canvas -->
+<canvas id="confettiCanvas" aria-hidden="true"></canvas>
+
+<!-- Fullscreen exit button -->
+<button class="fs-exit-btn" id="btnExitFullscreen" aria-label="Salir de pantalla completa">✕ Salir</button>
+
+<!-- =================================================================
+     HEADER
+================================================================= -->
+<header>
+  <div class="container">
+    <div class="header-inner">
+      <a href="#" class="logo" aria-label="RuletaSiNo.com inicio">
+        <div class="logo-icon" aria-hidden="true"></div>
+        <span class="logo-text">RuletaSiNo.com</span>
+      </a>
+      <button class="btn-icon" id="btnFullscreen" aria-label="Activar pantalla completa">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+        Pantalla completa
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- =================================================================
+     AD: MOBILE HEADER BANNER — justo debajo del header (solo móvil)
+     Google AdSense Ad Slot: Mobile Header Banner 320x50 / 300x50
+================================================================= -->
+<div class="ad-slot ad-mobile-header">
+  <div class="container">
+    <!-- Google AdSense Ad Slot: Mobile Header Banner -->
+    <div class="ad-placeholder" style="height:60px; max-width:360px; margin:0 auto;">
+      📢 Espacio publicitario · 320×50
+    </div>
+  </div>
+</div>
+
+<!-- =================================================================
+     AD: LEADERBOARD 728x90 — below hero, above wheel (desktop)
+     Google AdSense Ad Slot: Leaderboard
+     Reemplazar .ad-placeholder con <ins class="adsbygoogle"> 728x90
+================================================================= -->
+<div class="ad-slot ad-leaderboard">
+  <div class="container">
+    <!-- Google AdSense Ad Slot: Leaderboard 728x90 -->
+    <div class="ad-placeholder" style="height:90px; max-width:728px; margin:0 auto;">
+      📢 Espacio publicitario · 728×90 Leaderboard
+    </div>
+  </div>
+</div>
+
+<!-- =================================================================
+     HERO
+================================================================= -->
+<div class="container">
+  <div class="hero">
+    <h1>Ruleta de Sí o No</h1>
+    <p>Gira la ruleta y deja que el azar decida por ti</p>
+  </div>
+</div>
+
+<!-- =================================================================
+     MAIN CONTENT
+================================================================= -->
+<!-- =================================================================
+     AD: SKYSCRAPERS 160x600 flanking main content (desktop ≥1200px)
+     Google AdSense Ad Slot: Skyscraper Left / Right
+================================================================= -->
+<div class="ad-outer-wrap container-wide" style="max-width:1500px; margin:0 auto; padding:0 14px;">
+
+  <!-- Google AdSense Ad Slot: Skyscraper Left 160x600 -->
+  <div class="ad-slot ad-skyscraper-left">
+    <div class="ad-placeholder" style="width:160px; height:600px;">
+      📢<br>160×600
+    </div>
+  </div>
+
+  <div class="container" id="mainContent" style="padding:0;">
+  <div class="main-layout">
+
+    <!-- LEFT: WHEEL COLUMN -->
+    <div class="wheel-column">
+
+      <!-- Wheel -->
+      <div class="wheel-wrapper" id="wheelWrapper">
+        <!-- Fixed pointer arrow at top -->
+        <svg class="wheel-pointer" width="36" height="46" viewBox="0 0 36 46" aria-hidden="true">
+          <polygon points="18,44 3,6 33,6" fill="#c8a84b" stroke="#0d1220" stroke-width="1.5"/>
+          <circle cx="18" cy="9" r="5" fill="#f0c842"/>
+        </svg>
+        <canvas id="wheelCanvas" width="500" height="500"
+          role="img"
+          aria-label="Ruleta de decisión – haz clic en el centro para girar"
+          title="Haz clic en el centro para girar"></canvas>
+      </div>
+
+      <!-- Spin Button -->
+      <div class="spin-btn-area">
+        <button id="btnSpin" class="btn-spin" aria-label="Girar la ruleta">
+          ▶ GIRAR
+        </button>
+        <span class="spin-hint" aria-label="Atajo de teclado: Ctrl + Enter para girar">Ctrl + Enter para girar</span>
+        <div class="last-result-banner" id="lastResultBanner" role="status" aria-live="polite">
+          <span id="lastResultEmoji" aria-hidden="true"></span>
+          <span id="lastResultText"></span>
+        </div>
+      </div>
+
+      <!-- AD: Mobile only — between GIRAR button and counters -->
+      <!-- Google AdSense Ad Slot: Mobile Banner 300x50 -->
+      <div class="ad-slot ad-mobile-spin">
+        <div class="ad-placeholder">
+          📢 Espacio publicitario · 300×100 (solo móvil)
+        </div>
+      </div>
+
+    </div><!-- /wheel-column -->
+
+    <!-- RIGHT: CONTROLS COLUMN -->
+    <div class="controls-column">
+
+      <!-- Counters -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">📊 Contadores</span>
+          <button class="btn-danger" id="btnResetCounts" aria-label="Reiniciar contadores">↺ Reiniciar</button>
+        </div>
+        <div class="counters-grid">
+          <div class="counter-item yes">
+            <div class="counter-num" id="countYes">0</div>
+            <div class="counter-label">SÍ</div>
+          </div>
+          <div class="counter-item maybe">
+            <div class="counter-num" id="countMaybe">0</div>
+            <div class="counter-label">TAL VEZ</div>
+          </div>
+          <div class="counter-item no">
+            <div class="counter-num" id="countNo">0</div>
+            <div class="counter-label">NO</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mode & Groups -->
+      <div class="card">
+        <div class="card-header"><span class="card-title">🎮 Modo de juego</span></div>
+
+        <div class="control-group">
+          <span class="control-label">Opciones de la ruleta</span>
+          <div class="btn-group">
+            <button class="btn-opt active" data-mode="yes-no">SÍ / NO</button>
+            <button class="btn-opt" data-mode="yes-no-maybe">SÍ / NO / TAL VEZ</button>
+          </div>
+        </div>
+
+        <div class="control-group" style="margin-bottom:0">
+          <span class="control-label">Número de grupos (repeticiones)</span>
+          <div class="stepper">
+            <button class="stepper-btn" id="btnGroupsMinus" aria-label="Reducir grupos">−</button>
+            <span class="stepper-val" id="groupsVal">2</span>
+            <button class="stepper-btn" id="btnGroupsPlus" aria-label="Aumentar grupos">+</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Settings -->
+      <div class="card">
+        <div class="card-header"><span class="card-title">⚙️ Ajustes</span></div>
+
+        <div class="control-group">
+          <span class="control-label">Duración del giro</span>
+          <div class="range-row">
+            <input type="range" class="range-slider" id="sliderDuration"
+              min="2" max="8" step=".5" value="5" aria-label="Duración del giro en segundos">
+            <span class="range-val" id="valDuration">5s</span>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <span class="control-label">Intensidad</span>
+          <div class="btn-group">
+            <button class="btn-opt" data-intensity="low">Baja</button>
+            <button class="btn-opt active" data-intensity="medium">Media</button>
+            <button class="btn-opt" data-intensity="high">Alta</button>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="toggle-row">
+          <span class="toggle-label">🔊 Sonido</span>
+          <label class="toggle-sw">
+            <input type="checkbox" id="chkSound" checked aria-label="Activar sonido">
+            <span class="toggle-track"></span>
+          </label>
+        </div>
+        <div class="toggle-row">
+          <span class="toggle-label">🎉 Confetti</span>
+          <label class="toggle-sw">
+            <input type="checkbox" id="chkConfetti" checked aria-label="Activar confetti">
+            <span class="toggle-track"></span>
+          </label>
+        </div>
+        <div class="toggle-row">
+          <span class="toggle-label">🎭 Ruleta misteriosa (gira con ?)</span>
+          <label class="toggle-sw">
+            <input type="checkbox" id="chkMysteryWheel" aria-label="Activar ruleta misteriosa">
+            <span class="toggle-track"></span>
+          </label>
+        </div>
+        <div class="toggle-row">
+          <span class="toggle-label">🔮 Resultado misterioso</span>
+          <label class="toggle-sw">
+            <input type="checkbox" id="chkMysteryResult" aria-label="Activar resultado misterioso">
+            <span class="toggle-track"></span>
+          </label>
+        </div>
+
+        <div class="divider"></div>
+
+        <button class="btn-danger" id="btnResetAll" style="width:100%; margin-top:6px;">
+          🗑️ Reiniciar todo
+        </button>
+      </div>
+
+      <!-- Sidebar Ad (desktop only) -->
+      <!-- Google AdSense Ad Slot: Sidebar -->
+      <!-- Reemplazar este bloque con el código de AdSense 300x250 -->
+      <div class="ad-slot ad-sidebar">
+        <div class="ad-placeholder" style="min-height:250px; width:100%; border-radius:12px;">
+          📢 Espacio publicitario · 300×250
+        </div>
+      </div>
+
+    </div><!-- /controls-column -->
+
+  </div><!-- /main-layout -->
+</div><!-- /mainContent inner -->
+
+  <!-- Google AdSense Ad Slot: Skyscraper Right 160x600 -->
+  <div class="ad-slot ad-skyscraper-right">
+    <div class="ad-placeholder" style="width:160px; height:600px;">
+      📢<br>160×600
+    </div>
+  </div>
+
+</div><!-- /ad-outer-wrap -->
+
+<!-- =================================================================
+     AD: LARGE RECTANGLE 336x280 — between wheel and history
+     Google AdSense Ad Slot: Large Rectangle
+     Reemplazar con <ins class="adsbygoogle"> 336x280
+================================================================= -->
+<div class="ad-slot ad-rectangle">
+  <div class="container">
+    <!-- Google AdSense Ad Slot: Large Rectangle 336x280 -->
+    <div class="ad-placeholder" style="height:280px; max-width:336px; margin:0 auto;">
+      📢 Espacio publicitario · 336×280 Large Rectangle
+    </div>
+  </div>
+</div>
+
+<!-- =================================================================
+     HISTORY
+================================================================= -->
+<div class="container history-section">
+  <div class="history-card">
+    <div class="history-hdr" id="histToggle"
+      role="button" tabindex="0"
+      aria-expanded="false" aria-controls="histBody"
+      aria-label="Ver historial de resultados">
+      <div style="display:flex;align-items:center;gap:10px;flex:1">
+        <span class="card-title" style="margin:0">📜 Historial de resultados</span>
+        <span id="histCount" style="font-size:.72rem;color:var(--txt3)">(0)</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <button class="btn-danger" id="btnClearHist" style="font-size:.72rem;padding:3px 11px" aria-label="Limpiar historial">Limpiar</button>
+        <svg class="hist-chevron" id="histChevron" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+          <polyline points="6 9 12 15 18 9"/>
+        </svg>
+      </div>
+    </div>
+    <div class="history-body" id="histBody" role="region" aria-label="Lista de resultados anteriores">
+      <div class="history-list" id="histList">
+        <div class="history-empty">Aún no hay resultados. ¡Gira la ruleta!</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- =================================================================
+     AD: LEADERBOARD 728x90 — between history and footer
+     Google AdSense Ad Slot: Bottom Leaderboard
+     Reemplazar con <ins class="adsbygoogle"> 728x90
+================================================================= -->
+<div class="ad-slot ad-bottom">
+  <div class="container">
+    <!-- Google AdSense Ad Slot: Bottom Leaderboard 728x90 -->
+    <div class="ad-placeholder" style="height:90px; max-width:728px; margin:0 auto;">
+      📢 Espacio publicitario · 728×90 Leaderboard inferior
+    </div>
+  </div>
+</div>
+
+<!-- =================================================================
+     FOOTER
+================================================================= -->
+<footer>
+  <div class="container">
+    <p>RuletaSiNo.com &copy; 2026 · Herramienta gratuita · Las decisiones son del azar 🎲</p>
+  </div>
+</footer>
+
+<!-- =================================================================
+     RESULT MODAL
+================================================================= -->
+<div class="modal-overlay" id="resultModal"
+  role="dialog" aria-modal="true" aria-label="Resultado de la ruleta">
+  <div class="modal-card">
+    <button class="modal-close-x" id="modalCloseX" aria-label="Cerrar">✕</button>
+    <div id="modalContent">
+      <!-- Populated by JS -->
+    </div>
+    <div class="modal-actions" id="modalActions">
+      <!-- Populated by JS -->
+    </div>
+  </div>
+</div>
+
+
+<!-- =================================================================
+     JAVASCRIPT
+================================================================= -->
+<script>
+'use strict';
+// ================================================================
+//  CONSTANTS
+// ================================================================
+const SEG_COLORS = {
+  yes:   ['#00cc96','#009e74','#00e6a8','#00b580'],
+  no:    ['#ff4757','#cc2233','#ff6b7a','#e03040'],
+  maybe: ['#ffd32a','#c8a000','#ffe566','#e8bb00'],
+};
+
+const LABELS   = { yes:'SÍ', no:'NO', maybe:'TAL VEZ' };
+const EMOJIS   = { yes:'✅', no:'❌', maybe:'🤔' };
+const TAU      = 2 * Math.PI;
+const POINTER_ANGLE = -Math.PI / 2; // top of canvas
+
+const INTENSITY = {
+  low:    { min: 3, max: 5 },
+  medium: { min: 5, max: 9 },
+  high:   { min: 9, max: 14 },
+};
+
+const STORAGE_KEY = 'ruletadecide_v2';
+
+// ================================================================
+//  STATE
+// ================================================================
+const S = {
+  mode:          'yes-no',    // 'yes-no' | 'yes-no-maybe'
+  groups:        3,
+  spinDuration:  5000,        // ms
+  intensity:     'medium',
+  soundEnabled:  true,
+  confettiEnabled: true,
+  mysteryWheel:  false,
+  mysteryResult: false,
+  counts:        { yes: 0, no: 0, maybe: 0 },
+  history:       [],
+  angle:         0,           // current wheel rotation
+  spinning:      false,
+  pendingResult: null,
+};
+
+// ================================================================
+//  DOM REFS
+// ================================================================
+const canvas    = document.getElementById('wheelCanvas');
+const ctx       = canvas.getContext('2d');
+const btnSpin   = document.getElementById('btnSpin');
+const modal     = document.getElementById('resultModal');
+const modContent= document.getElementById('modalContent');
+const modActions= document.getElementById('modalActions');
+const lastBanner= document.getElementById('lastResultBanner');
+const cntYes    = document.getElementById('countYes');
+const cntNo     = document.getElementById('countNo');
+const cntMaybe  = document.getElementById('countMaybe');
+const grpVal    = document.getElementById('groupsVal');
+const histBody  = document.getElementById('histBody');
+const histList  = document.getElementById('histList');
+const histCount = document.getElementById('histCount');
+const histChev  = document.getElementById('histChevron');
+const confCanvas= document.getElementById('confettiCanvas');
+const confCtx   = confCanvas.getContext('2d');
+
+// ================================================================
+//  BUILD SEGMENTS
+// ================================================================
+function buildSegments() {
+  const base = S.mode === 'yes-no'
+    ? ['yes','no']
+    : ['yes','no','maybe'];
+  const out = [];
+  for (let g = 0; g < S.groups; g++)
+    for (const t of base)
+      out.push({ type: t, label: LABELS[t] });
+  return out;
+}
+
+// ================================================================
+//  DRAW WHEEL
+// ================================================================
+function drawWheel(isSpin = false) {
+  const segs = buildSegments();
+  const n    = segs.length;
+  const sz   = canvas.width;
+  const cx   = sz / 2, cy = sz / 2;
+  const outerR = sz * 0.46;
+  const arc  = TAU / n;
+
+  ctx.clearRect(0, 0, sz, sz);
+
+  // ── Outer golden ring ──
+  const ringGrd = ctx.createRadialGradient(cx, cy, outerR * .94, cx, cy, outerR * 1.05);
+  ringGrd.addColorStop(0, '#a88828');
+  ringGrd.addColorStop(0.4, '#f0c842');
+  ringGrd.addColorStop(0.7, '#c8a84b');
+  ringGrd.addColorStop(1, '#7a5c10');
+  ctx.beginPath();
+  ctx.arc(cx, cy, outerR * 1.055, 0, TAU);
+  ctx.fillStyle = ringGrd;
+  ctx.fill();
+
+  // ── Small decorative dots on ring ──
+  const dotR = outerR * 1.025;
+  const numDots = n * 4;
+  for (let d = 0; d < numDots; d++) {
+    const da = S.angle + (d / numDots) * TAU;
+    const dx = cx + dotR * Math.cos(da);
+    const dy = cy + dotR * Math.sin(da);
+    ctx.beginPath();
+    ctx.arc(dx, dy, sz * 0.007, 0, TAU);
+    ctx.fillStyle = d % 2 === 0 ? 'rgba(255,220,80,.9)' : 'rgba(180,140,30,.6)';
+    ctx.fill();
+  }
+
+  // ── Segments ──
+  for (let i = 0; i < n; i++) {
+    const seg   = segs[i];
+    const a0    = S.angle + i * arc;
+    const a1    = a0 + arc;
+    const aMid  = a0 + arc / 2;
+    const ci    = i % 2;
+
+    // Fill
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, outerR, a0, a1);
+    ctx.closePath();
+    const g1x = cx + outerR * .25 * Math.cos(aMid);
+    const g1y = cy + outerR * .25 * Math.sin(aMid);
+    const g2x = cx + outerR * Math.cos(aMid);
+    const g2y = cy + outerR * Math.sin(aMid);
+    const sGrd = ctx.createLinearGradient(g1x, g1y, g2x, g2y);
+    const col  = SEG_COLORS[seg.type][ci];
+    sGrd.addColorStop(0, col + 'cc');
+    sGrd.addColorStop(1, col);
+    ctx.fillStyle = sGrd;
+    ctx.fill();
+
+    // Divider line
+    ctx.strokeStyle = 'rgba(0,0,0,.3)';
+    ctx.lineWidth   = 1.5;
+    ctx.stroke();
+
+    // ── Text: always HORIZONTAL, positioned at segment center ──
+    const arcDeg   = 360 / n;
+    // Adaptive base font size: smaller for many segments, scales with wheel
+    const baseFs   = arcDeg < 30 ? sz * 0.036
+                   : arcDeg < 45 ? sz * 0.046
+                   : arcDeg < 60 ? sz * 0.056
+                   :               sz * 0.064;
+    const displayTxt = (isSpin && S.mysteryWheel) ? '?' : seg.label;
+    // Extra shrink for longer words
+    const lenFactor  = displayTxt.length > 6 ? 0.62
+                     : displayTxt.length > 3 ? 0.82
+                     :                          1.00;
+    const fs = Math.max(baseFs * lenFactor, 9);
+
+    // Text anchor: center of segment at ~63% radius
+    const textR = outerR * 0.63;
+    const tx = cx + textR * Math.cos(aMid);
+    const ty = cy + textR * Math.sin(aMid);
+
+    ctx.save();
+    ctx.translate(tx, ty);
+    // ↓ NO ctx.rotate() — text stays perfectly horizontal
+    ctx.textAlign    = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.font         = `400 ${fs}px 'Anton', sans-serif`;
+    ctx.shadowColor  = 'rgba(0,0,0,.8)';
+    ctx.shadowBlur   = 7;
+    ctx.fillStyle    = '#fff';
+
+    // "TAL VEZ" → split on space → two lines
+    if (displayTxt.includes(' ')) {
+      const parts = displayTxt.split(' ');
+      const lh    = fs * 1.18;
+      parts.forEach((part, pi) => {
+        ctx.fillText(part, 0, (pi - (parts.length - 1) / 2) * lh);
+      });
+    } else {
+      ctx.fillText(displayTxt, 0, 0);
+    }
+    ctx.shadowBlur = 0;
+    ctx.restore();
+  }
+
+  // ── Center circle ──
+  const innerR = sz * 0.135;
+  const cGrd = ctx.createRadialGradient(cx - sz*.015, cy - sz*.015, 0, cx, cy, innerR);
+  cGrd.addColorStop(0, '#2a2048');
+  cGrd.addColorStop(1, '#080b14');
+  ctx.beginPath();
+  ctx.arc(cx, cy, innerR, 0, TAU);
+  ctx.fillStyle = cGrd;
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(200,168,75,.7)';
+  ctx.lineWidth   = sz * .007;
+  ctx.stroke();
+
+  // ── Center text (GIRAR) ──
+  ctx.textAlign    = 'center';
+  ctx.textBaseline = 'middle';
+  if (!S.spinning) {
+    ctx.font        = `400 ${sz * .052}px 'Anton', sans-serif`;
+    ctx.fillStyle   = '#c8a84b';
+    ctx.shadowColor = 'rgba(0,0,0,.7)';
+    ctx.shadowBlur  = 8;
+    ctx.fillText('GIRAR', cx, cy - sz * .01);
+    ctx.shadowBlur  = 0;
+    ctx.font        = `400 ${sz * .028}px 'Anton', sans-serif`;
+    ctx.fillStyle   = 'rgba(200,168,75,.55)';
+    ctx.fillText('▶', cx, cy + sz * .05);
+  } else {
+    ctx.font      = `400 ${sz * .048}px 'Outfit', sans-serif`;
+    ctx.fillStyle = 'rgba(200,168,75,.6)';
+    ctx.fillText('…', cx, cy);
+  }
+  // ── Center pin (small gold dot, no white to block text) ──
+  ctx.beginPath();
+  ctx.arc(cx, cy + sz * .078, sz * .012, 0, TAU);
+  ctx.fillStyle = 'rgba(200,168,75,.4)';
+  ctx.fill();
+}
+
+// ================================================================
+//  CANVAS RESIZE
+// ================================================================
+function resizeCanvas() {
+  const w   = document.getElementById('wheelWrapper');
+  const sz  = Math.min(w.clientWidth, 480);
+  canvas.width  = sz;
+  canvas.height = sz;
+  drawWheel(S.spinning);
+}
+
+// ================================================================
+//  SPIN
+// ================================================================
+let spinStart  = null;
+let spinFrom   = 0;
+let spinTo     = 0;
+let spinDurMs  = 5000;
+let tickTimer  = null;
+let rafId      = null;
+
+function easeOutQuint(t) { return 1 - Math.pow(1 - t, 5); }
+
+function startSpin() {
+  if (S.spinning) return;
+  S.spinning = true;
+  btnSpin.disabled = true;
+  btnSpin.innerHTML = '<span class="spin-icon">⟳</span> GIRANDO...';
+
+  const { min, max } = INTENSITY[S.intensity];
+  const extraTurns   = min + Math.random() * (max - min);
+  spinFrom  = S.angle;
+  spinTo    = S.angle + extraTurns * TAU + Math.random() * TAU;
+  spinDurMs = S.spinDuration;
+  spinStart = null;
+
+  if (S.soundEnabled) scheduleTickSounds();
+  rafId = requestAnimationFrame(animateSpin);
+}
+
+function animateSpin(ts) {
+  if (!spinStart) spinStart = ts;
+  const elapsed  = ts - spinStart;
+  const progress = Math.min(elapsed / spinDurMs, 1);
+  const eased    = easeOutQuint(progress);
+
+  S.angle = spinFrom + (spinTo - spinFrom) * eased;
+  drawWheel(true);
+
+  if (progress < 1) {
+    rafId = requestAnimationFrame(animateSpin);
+  } else {
+    S.angle    = S.angle % TAU;
+    S.spinning = false;
+    if (tickTimer) { clearTimeout(tickTimer); tickTimer = null; }
+    drawWheel(false);
+    btnSpin.disabled = false;
+    btnSpin.innerHTML = '▶ GIRAR';
+    const result = computeResult();
+    onResult(result);
+  }
+}
+
+// ================================================================
+//  COMPUTE RESULT FROM FINAL ANGLE
+// ================================================================
+function computeResult() {
+  const segs = buildSegments();
+  const n    = segs.length;
+  const arc  = TAU / n;
+  // Angle in wheel's local frame that the top pointer points to
+  let relA = (POINTER_ANGLE - S.angle) % TAU;
+  if (relA < 0) relA += TAU;
+  const idx = Math.floor(relA / arc) % n;
+  return segs[idx].type;
+}
+
+// ================================================================
+//  ON RESULT
+// ================================================================
+function onResult(type) {
+  S.pendingResult = type;
+  S.counts[type]++;
+  S.history.unshift({ type, time: new Date().toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' }) });
+  saveState();
+  renderCounters();
+  renderHistory();
+  if (S.soundEnabled) playResultSound(type);
+  openModal(type);
+  showLastResult(type);
+}
+
+// ================================================================
+//  MODAL
+// ================================================================
+function openModal(type) {
+  if (S.mysteryResult) {
+    modContent.innerHTML = `
+      <div class="modal-lbl">¿Cuál será el resultado?</div>
+      <div class="modal-mystery">???</div>
+      <div style="color:var(--txt3);font-size:.82rem;margin-top:4px">Haz clic para revelar</div>
+    `;
+    modActions.innerHTML = `<button class="btn-modal-reveal" id="btnReveal" aria-label="Revelar resultado">🔮 Revelar resultado</button>`;
+    document.getElementById('btnReveal').addEventListener('click', () => {
+      fillModalContent(type);
+      if (S.confettiEnabled) startConfetti(type);
+    });
+  } else {
+    fillModalContent(type);
+    if (S.confettiEnabled) startConfetti(type);
+  }
+  modal.classList.add('show');
+  modal.focus();
+}
+
+function fillModalContent(type) {
+  modContent.innerHTML = `
+    <div class="modal-lbl">Resultado</div>
+    <span class="modal-emoji" aria-hidden="true">${EMOJIS[type]}</span>
+    <div class="modal-result ${type}" role="status">${LABELS[type]}</div>
+  `;
+  modActions.innerHTML = `<button class="btn-modal-primary" id="btnModalClose" aria-label="Cerrar y volver a girar">¡Girar de nuevo!</button>`;
+  document.getElementById('btnModalClose').addEventListener('click', closeModal);
+}
+
+function closeModal() {
+  modal.classList.remove('show');
+  stopConfetti();
+}
+
+function showLastResult(type) {
+  lastBanner.className = `last-result-banner show ${type}`;
+  document.getElementById('lastResultEmoji').textContent = EMOJIS[type];
+  document.getElementById('lastResultText').textContent  = `Último resultado: ${LABELS[type]}`;
+}
+
+// ================================================================
+//  COUNTERS
+// ================================================================
+function renderCounters() {
+  bumpCounter(cntYes,   S.counts.yes);
+  bumpCounter(cntNo,    S.counts.no);
+  bumpCounter(cntMaybe, S.counts.maybe);
+}
+
+function bumpCounter(el, val) {
+  const prev = parseInt(el.textContent) || 0;
+  el.textContent = val;
+  if (val > prev) {
+    el.classList.add('bump');
+    setTimeout(() => el.classList.remove('bump'), 350);
+  }
+}
+
+// ================================================================
+//  HISTORY
+// ================================================================
+function renderHistory() {
+  histCount.textContent = `(${S.history.length})`;
+  if (!S.history.length) {
+    histList.innerHTML = '<div class="history-empty">Aún no hay resultados. ¡Gira la ruleta!</div>';
+    return;
+  }
+  histList.innerHTML = S.history.map((h, i) =>
+    `<div class="history-item">
+      <span class="hist-num">#${i + 1}</span>
+      <span class="hist-badge ${h.type}">${LABELS[h.type]}</span>
+      <span class="hist-time">${h.time}</span>
+    </div>`
+  ).join('');
+}
+
+// ================================================================
+//  SOUND (Web Audio API)
+// ================================================================
+let audioCtx = null;
+function getAudio() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  return audioCtx;
+}
+
+function playBeep(freq, dur, vol = .1) {
+  try {
+    const a = getAudio();
+    const o = a.createOscillator();
+    const g = a.createGain();
+    o.connect(g); g.connect(a.destination);
+    o.type = 'triangle';
+    o.frequency.value = freq;
+    g.gain.setValueAtTime(vol, a.currentTime);
+    g.gain.exponentialRampToValueAtTime(.0001, a.currentTime + dur);
+    o.start(a.currentTime);
+    o.stop(a.currentTime + dur);
+  } catch (_) {}
+}
+
+function scheduleTickSounds() {
+  let elapsed = 0;
+  let interval = 90;
+  const dur = spinDurMs;
+
+  function tick() {
+    if (!S.spinning) return;
+    playBeep(700 + Math.random() * 300, .06, .07);
+    elapsed += interval;
+    const prog = elapsed / dur;
+    // Accelerate then decelerate
+    if (prog < 0.25) interval = Math.max(55, 90 - prog * 150);
+    else             interval = 55 + Math.pow(prog - 0.25, 1.5) * 350;
+    if (elapsed < dur + 200) tickTimer = setTimeout(tick, interval);
+  }
+  tickTimer = setTimeout(tick, interval);
+}
+
+function playResultSound(type) {
+  const notes = {
+    yes:   [523, 659, 784],   // C–E–G (joyful)
+    no:    [392, 349, 294],   // G–F–D (descending)
+    maybe: [440, 494, 440],   // A–B–A (curious)
+  };
+  try {
+    const a = getAudio();
+    notes[type].forEach((f, i) => {
+      const o = a.createOscillator();
+      const g = a.createGain();
+      o.connect(g); g.connect(a.destination);
+      o.type = 'sine'; o.frequency.value = f;
+      const t = a.currentTime + i * .13;
+      g.gain.setValueAtTime(.18, t);
+      g.gain.exponentialRampToValueAtTime(.001, t + .22);
+      o.start(t); o.stop(t + .25);
+    });
+  } catch (_) {}
+}
+
+// ================================================================
+//  CONFETTI
+// ================================================================
+const CONF_COLORS = {
+  yes:   ['#00cc96','#00e6a8','#80ffd4','#fff','#00a07a'],
+  no:    ['#ff4757','#ff7480','#ffb3b8','#fff','#cc2233'],
+  maybe: ['#ffd32a','#ffe566','#fff1a0','#fff','#e6b800'],
+};
+
+let confParticles = [];
+let confRaf = null;
+
+function startConfetti(type) {
+  stopConfetti();
+  confCanvas.width  = window.innerWidth;
+  confCanvas.height = window.innerHeight;
+  const cols = CONF_COLORS[type] || CONF_COLORS.yes;
+  for (let i = 0; i < 160; i++) {
+    confParticles.push({
+      x: Math.random() * confCanvas.width,
+      y: -15 - Math.random() * 120,
+      w: 5 + Math.random() * 9, h: 7 + Math.random() * 6,
+      color: cols[Math.floor(Math.random() * cols.length)],
+      vx: (Math.random() - .5) * 4.5,
+      vy: 1.5 + Math.random() * 4,
+      rot: Math.random() * 360, rotV: (Math.random() - .5) * 9,
+      op: 1,
+    });
+  }
+  animateConf();
+  setTimeout(stopConfetti, 4500);
+}
+
+function animateConf() {
+  confCtx.clearRect(0, 0, confCanvas.width, confCanvas.height);
+  let alive = false;
+  for (const p of confParticles) {
+    p.x += p.vx; p.y += p.vy; p.rot += p.rotV;
+    if (p.y > confCanvas.height - 60) p.op -= .025;
+    if (p.op > 0) {
+      alive = true;
+      confCtx.save();
+      confCtx.globalAlpha = Math.max(0, p.op);
+      confCtx.translate(p.x, p.y);
+      confCtx.rotate(p.rot * Math.PI / 180);
+      confCtx.fillStyle = p.color;
+      confCtx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+      confCtx.restore();
+    }
+  }
+  if (alive) confRaf = requestAnimationFrame(animateConf);
+  else { confCtx.clearRect(0, 0, confCanvas.width, confCanvas.height); confParticles = []; }
+}
+
+function stopConfetti() {
+  if (confRaf) { cancelAnimationFrame(confRaf); confRaf = null; }
+  confCtx.clearRect(0, 0, confCanvas.width, confCanvas.height);
+  confParticles = [];
+}
+
+// ================================================================
+//  FULLSCREEN
+// ================================================================
+function enterFullscreen() {
+  document.body.classList.add('fs-active');
+  document.getElementById('btnExitFullscreen').style.display = 'flex';
+  resizeCanvas();
+}
+function exitFullscreen() {
+  document.body.classList.remove('fs-active');
+  document.getElementById('btnExitFullscreen').style.display = 'none';
+  resizeCanvas();
+}
+
+// ================================================================
+//  LOCAL STORAGE
+// ================================================================
+function saveState() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      mode: S.mode, groups: S.groups,
+      spinDuration: S.spinDuration, intensity: S.intensity,
+      soundEnabled: S.soundEnabled, confettiEnabled: S.confettiEnabled,
+      mysteryWheel: S.mysteryWheel, mysteryResult: S.mysteryResult,
+      counts: S.counts, history: S.history.slice(0, 100),
+    }));
+  } catch (_) {}
+}
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) Object.assign(S, JSON.parse(raw));
+  } catch (_) {}
+}
+
+// ================================================================
+//  SYNC UI ← STATE
+// ================================================================
+function syncUI() {
+  // Mode
+  document.querySelectorAll('[data-mode]').forEach(b =>
+    b.classList.toggle('active', b.dataset.mode === S.mode));
+  // Intensity
+  document.querySelectorAll('[data-intensity]').forEach(b =>
+    b.classList.toggle('active', b.dataset.intensity === S.intensity));
+  // Groups
+  grpVal.textContent = S.groups;
+  // Duration
+  document.getElementById('sliderDuration').value = S.spinDuration / 1000;
+  document.getElementById('valDuration').textContent = `${S.spinDuration / 1000}s`;
+  // Toggles
+  document.getElementById('chkSound').checked         = S.soundEnabled;
+  document.getElementById('chkConfetti').checked      = S.confettiEnabled;
+  document.getElementById('chkMysteryWheel').checked  = S.mysteryWheel;
+  document.getElementById('chkMysteryResult').checked = S.mysteryResult;
+  // Data
+  renderCounters();
+  renderHistory();
+}
+
+function resetAll() {
+  if (!confirm('¿Reiniciar todo? Se borrarán conteos, historial y configuración.')) return;
+  Object.assign(S, {
+    mode: 'yes-no', groups: 3, spinDuration: 5000, intensity: 'medium',
+    soundEnabled: true, confettiEnabled: true, mysteryWheel: false, mysteryResult: false,
+    counts: { yes: 0, no: 0, maybe: 0 }, history: [], angle: 0,
+  });
+  lastBanner.classList.remove('show');
+  saveState(); syncUI(); drawWheel(false);
+}
+
+// ================================================================
+//  EVENT LISTENERS
+// ================================================================
+// Spin
+btnSpin.addEventListener('click', startSpin);
+
+// Click center circle of wheel to spin
+canvas.addEventListener('click', (e) => {
+  const rect = canvas.getBoundingClientRect();
+  const scX  = canvas.width  / rect.width;
+  const scY  = canvas.height / rect.height;
+  const dx   = (e.clientX - rect.left) * scX - canvas.width  / 2;
+  const dy   = (e.clientY - rect.top)  * scY - canvas.height / 2;
+  if (Math.sqrt(dx * dx + dy * dy) <= canvas.width * 0.15) startSpin();
+});
+
+// Keyboard shortcut
+document.addEventListener('keydown', (e) => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); startSpin(); }
+  if (e.key === 'Escape') closeModal();
+});
+
+// Modal close X
+document.getElementById('modalCloseX').addEventListener('click', closeModal);
+modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+
+// Reset counts
+document.getElementById('btnResetCounts').addEventListener('click', () => {
+  S.counts = { yes: 0, no: 0, maybe: 0 };
+  renderCounters(); saveState();
+});
+
+// Reset all
+document.getElementById('btnResetAll').addEventListener('click', resetAll);
+
+// Clear history
+document.getElementById('btnClearHist').addEventListener('click', () => {
+  S.history = []; renderHistory(); saveState();
+});
+
+// History toggle
+function toggleHist() {
+  const open = histBody.classList.toggle('open');
+  histChev.classList.toggle('open', open);
+  document.getElementById('histToggle').setAttribute('aria-expanded', String(open));
+}
+document.getElementById('histToggle').addEventListener('click', toggleHist);
+document.getElementById('histToggle').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleHist(); }
+});
+
+// Mode buttons
+document.querySelectorAll('[data-mode]').forEach(b => b.addEventListener('click', () => {
+  S.mode = b.dataset.mode;
+  document.querySelectorAll('[data-mode]').forEach(x => x.classList.toggle('active', x === b));
+  saveState(); drawWheel(false);
+}));
+
+// Intensity buttons
+document.querySelectorAll('[data-intensity]').forEach(b => b.addEventListener('click', () => {
+  S.intensity = b.dataset.intensity;
+  document.querySelectorAll('[data-intensity]').forEach(x => x.classList.toggle('active', x === b));
+  saveState();
+}));
+
+// Groups stepper
+document.getElementById('btnGroupsMinus').addEventListener('click', () => {
+  if (S.groups > 1) { S.groups--; grpVal.textContent = S.groups; saveState(); drawWheel(false); }
+});
+document.getElementById('btnGroupsPlus').addEventListener('click', () => {
+  if (S.groups < 5) { S.groups++; grpVal.textContent = S.groups; saveState(); drawWheel(false); }
+});
+
+// Duration slider
+document.getElementById('sliderDuration').addEventListener('input', (e) => {
+  const v = parseFloat(e.target.value);
+  S.spinDuration = v * 1000;
+  document.getElementById('valDuration').textContent = `${v}s`;
+  saveState();
+});
+
+// Toggles
+document.getElementById('chkSound').addEventListener('change',        (e) => { S.soundEnabled    = e.target.checked; saveState(); });
+document.getElementById('chkConfetti').addEventListener('change',     (e) => { S.confettiEnabled = e.target.checked; saveState(); });
+document.getElementById('chkMysteryWheel').addEventListener('change', (e) => { S.mysteryWheel    = e.target.checked; saveState(); drawWheel(false); });
+document.getElementById('chkMysteryResult').addEventListener('change',(e) => { S.mysteryResult   = e.target.checked; saveState(); });
+
+// Fullscreen
+document.getElementById('btnFullscreen').addEventListener('click', enterFullscreen);
+document.getElementById('btnExitFullscreen').addEventListener('click', exitFullscreen);
+
+// Resize
+window.addEventListener('resize', resizeCanvas);
+
+// Confetti canvas resize
+window.addEventListener('resize', () => {
+  if (confCanvas.width) { confCanvas.width = window.innerWidth; confCanvas.height = window.innerHeight; }
+});
+
+// ================================================================
+//  INIT
+// ================================================================
+function init() {
+  loadState();
+  resizeCanvas();
+  syncUI();
+}
+
+init();
+</script>
+
+
+</body>
+</html>
